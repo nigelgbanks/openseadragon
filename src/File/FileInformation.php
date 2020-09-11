@@ -58,7 +58,15 @@ class FileInformation implements FileInformationInterface {
       }
     }
     $output['mime_type'] = $mime_type;
-    $output['full_path'] = $file->url();
+    // If we are behind a reverse proxy allow cantaloupe to 
+    // access Drupal via http on the internal network 
+    // (assumes an alias is setup on the internal network for the same url).
+    if (Settings::get('reverse_proxy', FALSE)) {
+      $output['full_path'] = str_replace("https:", "http:", $file->url());
+    }
+    else {
+      $output['full_path'] = $file->url();
+    }
     return $output;
   }
 
